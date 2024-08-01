@@ -1,0 +1,33 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environnement virtuel
+venv/
+.env
+test/
+
+# IDE
+.vscode/
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Ignorer le dossier src
+flow/
+
+# Ignorer le fichier main.py
+test.py
+
+#Ignorer les folder 
+src/
+
