@@ -90,8 +90,8 @@ RUN chmod -R 755 /opt/nifi/nifi-current/python_extensions && \
     chmod +x /opt/nifi/nifi-current/python_extensions/chunking && \
     chmod +x /opt/nifi/nifi-current/python_extensions/openai && \
     chmod +x /opt/nifi/nifi-current/python_extensions/vectorstores && \
-    chmod +x /opt/nifi/nifi-current/python_extensions/scrapping
-
+    chmod +x /opt/nifi/nifi-current/python_extensions/scrapping && \
+    chmod +x /opt/nifi/nifi-current/python_extensions/embeddings
 # Expose necessary ports (adjust as per your NiFi setup)
 EXPOSE 8080 8443
 

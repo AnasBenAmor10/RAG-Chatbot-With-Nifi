@@ -67,46 +67,6 @@ METADATA_KEY = "metadata"
         ),
     ],
 )
-@multi_processor_use_case(
-    description="""
-        Parse and chunk the textual contents of a PDF document in order to prepare it for storage in a vector store. The output is in "json-lines" format,
-        containing the chunked data as text, as well as metadata pertaining to the chunk.""",
-    notes="The input for this use case is expected to be a FlowFile whose content is a PDF document.",
-    keywords=[
-        "pdf",
-        "embedding",
-        "vector",
-        "text",
-        "rag",
-        "retrieval augmented generation",
-    ],
-    configurations=[
-        ProcessorConfiguration(
-            processor_type="ParseDocument",
-            configuration="""
-                  Set "Input Format" to "PDF"
-                  Set "Element Strategy" to "Single Document"
-                  Set "Include Extracted Metadata" to "false"
-
-                  Connect the 'success' Relationship to ChunkDocument.
-                  """,
-        ),
-        ProcessorConfiguration(
-            processor_type="ChunkDocument",
-            configuration="""
-                  Set the following properties:
-                    "Chunking Strategy" = "Recursively Split by Character"
-                    "Separator" = "\\n\\n,\\n, ,"
-                    "Separator Format" = "Plain Text"
-                    "Chunk Size" = "4000"
-                    "Chunk Overlap" = "200"
-                    "Keep Separator" = "false"
-
-                  Connect the 'success' Relationship to the appropriate destination to store data in the desired vector store.
-                  """,
-        ),
-    ],
-)
 class ChunkDocument(FlowFileTransform):
     class Java:
         implements = ["org.apache.nifi.python.processor.FlowFileTransform"]
@@ -295,7 +255,7 @@ class ChunkDocument(FlowFileTransform):
             )
             json_docs.append(json_doc)
 
-        return "\n".join(json_docs)
+        return json_docs
 
     def load_docs(self, flowfile):
         from langchain.schema import Document

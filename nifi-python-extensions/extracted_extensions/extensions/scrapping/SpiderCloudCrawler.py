@@ -2,12 +2,12 @@
 
 from nifiapi.flowfiletransform import FlowFileTransform, FlowFileTransformResult
 from nifiapi.properties import (
-    ExpressionLanguageScope,
     PropertyDescriptor,
     StandardValidators,
 )
 import json
 import logging
+import requests
 
 
 class SpiderCloudCrawler(FlowFileTransform):
@@ -20,7 +20,6 @@ class SpiderCloudCrawler(FlowFileTransform):
                          and the output will be in JSON format with the extracted content and metadata."""
         tags = ["web", "crawler", "spidercloud", "json", "document"]
         dependencies = ["requests"]
-        input_required = False
 
     API_KEY = PropertyDescriptor(
         name="API Key",
@@ -45,7 +44,7 @@ class SpiderCloudCrawler(FlowFileTransform):
         name="Limit",
         description="The maximum number of pages to crawl.",
         required=True,
-        default_value="10",
+        default_value="15",
         validators=[StandardValidators.POSITIVE_INTEGER_VALIDATOR],
     )
     RETURN_FORMAT = PropertyDescriptor(
@@ -67,16 +66,16 @@ class SpiderCloudCrawler(FlowFileTransform):
     def get_api_key(self, context):
         return context.getProperty(self.API_KEY).getValue()
 
-    def start_crawling(self, api_key, url, depth, limit, return_format):
+    def start_crawling(self, context):
         headers = {
-            "Authorization": f"Bearer {api_key}",
+            "Authorization": f"Bearer {self.get_api_key(context)}",
             "Content-Type": "application/json",
         }
         json_data = {
-            "url": url,
-            "depth": depth,
-            "limit": limit,
-            "return_format": return_format,
+            "url": context.getProperty(self.URL).getValue(),
+            "depth": context.getProperty(self.DEPTH).asInteger(),
+            "limit": context.getProperty(self.LIMIT).asInteger(),
+            "return_format": context.getProperty(self.RETURN_FORMAT).getValue(),
         }
         try:
             response = requests.post(
@@ -96,7 +95,7 @@ class SpiderCloudCrawler(FlowFileTransform):
                     url = item["url"]
                     content = item["content"]
                     if url.startswith("http"):
-                        doc = {"page_content": content, "metadata": {"url": url}}
+                        doc = {"text": content, "metadata": {"source": url}}
                         docs.append(doc)
                     else:
                         logging.warning(f"Ignored invalid URL: {url}")
@@ -107,29 +106,14 @@ class SpiderCloudCrawler(FlowFileTransform):
             raise ValueError("API response is not a list.")
         return docs
 
-    def to_json(self, docs) -> str:
-        json_docs = []
-        for i, doc in enumerate(docs):
-            doc["metadata"]["chunk_index"] = i
-            doc["metadata"]["chunk_count"] = len(docs)
-            json_docs.append(json.dumps(doc))
-        return "\n".join(json_docs)
-
-    def transform(self, context):
+    def transform(self, context, flowfile=None):
         try:
-            # Extract properties
-            api_key = self.get_api_key(context)
-            url = context.getProperty(self.URL).getValue()
-            depth = context.getProperty(self.DEPTH).asInteger()
-            limit = context.getProperty(self.LIMIT).asInteger()
-            return_format = context.getProperty(self.RETURN_FORMAT).getValue()
-
-            # Perform crawling
-            crawl_data = self.start_crawling(api_key, url, depth, limit, return_format)
+            crawl_data = self.start_crawling(context)
             documents = self.process_crawl_data(crawl_data)
-            output_json = self.to_json(documents)
+            output_json = json.dumps(
+                documents, ensure_ascii=False, separators=(",", ":")
+            )
 
-            # Return result
             return FlowFileTransformResult(
                 "success",
                 contents=output_json,
