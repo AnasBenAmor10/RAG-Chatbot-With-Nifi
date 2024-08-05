@@ -39,7 +39,7 @@ Follow the below instructions to get this flow running:
 
   ![Process Group](images/nifi-process-group.png)
 
-- Select the NiFi flow called Evernote_Vector_Embeddings_Ingestion_Pipeline located under nifi-processors
+- Select the NiFi flow called Nifi_Flow.json located under./
 
   ![Add Process Group](images/nifi-add-process-group-embeddings-ingestion.png)
 
