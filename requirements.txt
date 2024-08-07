@@ -1,2 +1,5 @@
 langchain==0.1.7
 requests
+openai 
+pinecone-client
+tiktoken

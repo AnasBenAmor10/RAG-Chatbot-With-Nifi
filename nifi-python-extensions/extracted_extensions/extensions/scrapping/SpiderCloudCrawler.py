@@ -9,7 +9,6 @@ import json
 import logging
 import requests
 
-
 class SpiderCloudCrawler(FlowFileTransform):
     class Java:
         implements = ["org.apache.nifi.python.processor.FlowFileTransform"]
@@ -110,9 +109,7 @@ class SpiderCloudCrawler(FlowFileTransform):
         try:
             crawl_data = self.start_crawling(context)
             documents = self.process_crawl_data(crawl_data)
-            output_json = json.dumps(
-                documents, ensure_ascii=False, separators=(",", ":")
-            )
+            output_json = json.dumps(documents, ensure_ascii=False, separators=(',', ':'))
 
             return FlowFileTransformResult(
                 "success",

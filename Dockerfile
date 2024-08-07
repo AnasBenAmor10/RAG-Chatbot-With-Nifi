@@ -88,7 +88,6 @@ COPY  nifi-python-extensions/extracted_extensions/extensions /opt/nifi/nifi-curr
 # Ensure correct permissions for the custom processors
 RUN chmod -R 755 /opt/nifi/nifi-current/python_extensions && \
     chmod +x /opt/nifi/nifi-current/python_extensions/chunking && \
-    chmod +x /opt/nifi/nifi-current/python_extensions/openai && \
     chmod +x /opt/nifi/nifi-current/python_extensions/vectorstores && \
     chmod +x /opt/nifi/nifi-current/python_extensions/scrapping && \
     chmod +x /opt/nifi/nifi-current/python_extensions/embeddings

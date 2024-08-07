@@ -255,7 +255,7 @@ class ChunkDocument(FlowFileTransform):
             )
             json_docs.append(json_doc)
 
-        return json_docs
+        return "\n".join(json_docs)
 
     def load_docs(self, flowfile):
         from langchain.schema import Document
