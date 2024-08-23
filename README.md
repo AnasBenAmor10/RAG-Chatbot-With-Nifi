@@ -3,6 +3,7 @@
 ## Prerequisites
 
 - Docker Desktop: Ensure Docker Desktop is installed and running on your system.
+- In the /infra/nifi you should install and add jython-standalone-2.7.2.jar and Python-3.11.9.tgz
 
 ## Setup and Running Instructions
 

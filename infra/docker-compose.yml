@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+  nifi:
+    build:
+      dockerfile: nifi/Dockerfile.nifi
+      context: .
+    container_name: Nifi
+    user: root
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64 
+      - X-ProxyPort=8051
+    ports:
+      - "8443:8443"  
+      - "9698:9698" 
+    volumes:
+      - nifi_content_repository:/opt/nifi/nifi-current/content_repository
+      - nifi_database_repository:/opt/nifi/nifi-current/database_repository
+      - nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - nifi_logs:/opt/nifi/nifi-current/logs
+      - nifi_state:/opt/nifi/nifi-current/state
+      - nifi_conf:/opt/nifi/nifi-current/conf
+      - ./nifi-python-extensions/extracted_extensions/extensions:/opt/nifi/nifi-current/python_extensions
+      - nifi_cert_volume:/usr/local/share/ca-certificates
+    networks:
+      - chatbot
+
+  nifi-registry:
+    container_name: Nifi-registry
+    image: 'apache/nifi-registry:2.0.0-M4'
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64  
+    ports:
+      - "18080:18080"  
+    volumes:
+      - nifi_registry_database:/opt/nifi-registry/database
+    depends_on:
+      - nifi
+    networks:
+      - chatbot
+
+  streamlit:
+    container_name: Streamlit
+    restart: always
+    build:
+      dockerfile: streamlit/Dockerfile.streamlit
+      context: .
+    ports:
+      - '8051:8051'  
+    networks:
+      - chatbot
+    volumes:
+      - nifi_cert_volume:/usr/local/share/ca-certificates  
+
+volumes:
+  nifi_content_repository:
+  nifi_registry_database:
+  nifi_database_repository:
+  nifi_flowfile_repository:
+  nifi_provenance_repository:
+  nifi_logs:
+  nifi_state:
+  nifi_conf:
+  nifi_cert_volume:
+
+networks:
+  chatbot:
+    driver: bridge
