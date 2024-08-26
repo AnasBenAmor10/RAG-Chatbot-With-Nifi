@@ -10,8 +10,20 @@ services:
     environment:
       - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64 
       - X-ProxyPort=8051
+      - NIFI_WEB_HTTPS_PORT=9443
+      - NIFI_WEB_HTTP_PORT=8080
+      - AUTH=tls
+      - KEYSTORE_PATH=/opt/certs/keystore.jks
+      - KEYSTORE_TYPE=JKS
+      - KEYSTORE_PASSWORD=QKZv1hSWAFQYZ+WU1jjF5ank+l4igeOfQRp+OSbkkrs
+      - TRUSTSTORE_PATH=/opt/certs/truststore.jks
+      - TRUSTSTORE_PASSWORD=rHkWR1gDNW3R9hgbeRsT3OM3Ue0zwGtQqcFKJD2EXWE
+      - TRUSTSTORE_TYPE=JKS
+      - INITIAL_ADMIN_IDENTITY='CN=Random User, O=Apache, OU=NiFi, C=US'
+      - SINGLE_USER_CREDENTIALS_USERNAME=orthlane
+      - SINGLE_USER_CREDENTIALS_PASSWORD=orthlane
     ports:
-      - "8443:8443"  
+      - "9443:9443"  
       - "9698:9698" 
     volumes:
       - nifi_content_repository:/opt/nifi/nifi-current/content_repository
@@ -22,7 +34,7 @@ services:
       - nifi_state:/opt/nifi/nifi-current/state
       - nifi_conf:/opt/nifi/nifi-current/conf
       - ./nifi-python-extensions/extracted_extensions/extensions:/opt/nifi/nifi-current/python_extensions
-      - nifi_cert_volume:/usr/local/share/ca-certificates
+      - nifi_cert_volume:/opt/certs
     networks:
       - chatbot
 
@@ -50,8 +62,6 @@ services:
       - '8051:8051'  
     networks:
       - chatbot
-    volumes:
-      - nifi_cert_volume:/usr/local/share/ca-certificates  
 
 volumes:
   nifi_content_repository:

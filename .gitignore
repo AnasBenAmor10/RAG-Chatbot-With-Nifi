@@ -163,6 +163,4 @@ cython_debug/
 #.idea/
 
 test.py
-jython-standalone-2.7.2.jar 
-Python-3.11.9.tgz
 nifi-cert.pem
