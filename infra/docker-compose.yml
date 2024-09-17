@@ -9,22 +9,12 @@ services:
     user: root
     environment:
       - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64 
-      - X-ProxyPort=8051
-      - NIFI_WEB_HTTPS_PORT=9443
-      - NIFI_WEB_HTTP_PORT=8080
-      - AUTH=tls
-      - KEYSTORE_PATH=/opt/certs/keystore.jks
-      - KEYSTORE_TYPE=JKS
-      - KEYSTORE_PASSWORD=QKZv1hSWAFQYZ+WU1jjF5ank+l4igeOfQRp+OSbkkrs
-      - TRUSTSTORE_PATH=/opt/certs/truststore.jks
-      - TRUSTSTORE_PASSWORD=rHkWR1gDNW3R9hgbeRsT3OM3Ue0zwGtQqcFKJD2EXWE
-      - TRUSTSTORE_TYPE=JKS
-      - INITIAL_ADMIN_IDENTITY='CN=Random User, O=Apache, OU=NiFi, C=US'
-      - SINGLE_USER_CREDENTIALS_USERNAME=orthlane
-      - SINGLE_USER_CREDENTIALS_PASSWORD=orthlane
+      - NIFI_WEB_HTTPS_PORT=9443 
+      - SINGLE_USER_CREDENTIALS_USERNAME=nifi
+      - SINGLE_USER_CREDENTIALS_PASSWORD=nifi2024
+      
     ports:
       - "9443:9443"  
-      - "9698:9698" 
     volumes:
       - nifi_content_repository:/opt/nifi/nifi-current/content_repository
       - nifi_database_repository:/opt/nifi/nifi-current/database_repository
@@ -34,17 +24,26 @@ services:
       - nifi_state:/opt/nifi/nifi-current/state
       - nifi_conf:/opt/nifi/nifi-current/conf
       - ./nifi-python-extensions/extracted_extensions/extensions:/opt/nifi/nifi-current/python_extensions
-      - nifi_cert_volume:/opt/certs
     networks:
       - chatbot
 
   nifi-registry:
     container_name: Nifi-registry
-    image: 'apache/nifi-registry:2.0.0-M4'
+    build:
+      dockerfile: nifi-registry/Dockerfile.registry
+      context: .
     environment:
-      - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64  
+      - JAVA_HOME=/usr/lib/jvm/jdk-21.0.3-bellsoft-x86_64 
+      - AUTH=tls 
+      - KEYSTORE_PATH=/opt/nifi-registry/nifi-registry-current/certif/keystore.jks
+      - KEYSTORE_TYPE=JKS 
+      - KEYSTORE_PASSWORD=anasanas
+      - TRUSTSTORE_PATH=/opt/nifi-registry/nifi-registry-current/certif/truststore.jks 
+      - TRUSTSTORE_PASSWORD=anasanas
+      - TRUSTSTORE_TYPE=JKS 
+      - INITIAL_ADMIN_IDENTITY='CN=admin, O=orgax, OU=it, C=TN , S=tunis' 
     ports:
-      - "18080:18080"  
+      - "18443:18443"  
     volumes:
       - nifi_registry_database:/opt/nifi-registry/database
     depends_on:
@@ -72,7 +71,6 @@ volumes:
   nifi_logs:
   nifi_state:
   nifi_conf:
-  nifi_cert_volume:
 
 networks:
   chatbot:

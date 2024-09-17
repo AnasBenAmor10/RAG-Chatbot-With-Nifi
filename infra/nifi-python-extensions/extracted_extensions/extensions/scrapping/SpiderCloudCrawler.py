@@ -24,6 +24,7 @@ class SpiderCloudCrawler(FlowFileTransform):
     API_KEY = PropertyDescriptor(
         name="API Key",
         description="The API Key to authenticate with the SpiderCloud service.",
+        sensitive=True,
         required=True,
         validators=[StandardValidators.NON_EMPTY_VALIDATOR],
     )

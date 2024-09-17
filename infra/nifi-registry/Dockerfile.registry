@@ -1,0 +1,10 @@
+FROM apache/nifi-registry:2.0.0-M4
+
+# Switch to root user
+USER root
+
+# Copy the certif folder into the container
+COPY nifi-registry/certif /opt/nifi-registry/nifi-registry-current/certif
+
+# Set the appropriate permissions (if needed, adjust as necessary)
+RUN chmod +x /opt/nifi-registry/nifi-registry-current/certif
