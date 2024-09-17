@@ -47,8 +47,6 @@ This project has the following file structure:
 
 ```
 .
-.github
-│   └───workflows
 ├───images
 ├───infra
 │   ├───nifi
